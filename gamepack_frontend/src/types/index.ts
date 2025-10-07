@@ -46,6 +46,7 @@ export interface Review {
   image: string;
   reviewer: User;
   published_at: string;
+  // comments: Comment[];
 }
 
 export interface Ad {

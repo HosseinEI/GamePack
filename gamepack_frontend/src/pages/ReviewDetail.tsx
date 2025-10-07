@@ -5,7 +5,7 @@ import { Review } from '../types';
 import Loader from '../components/Loader';
 
 // Assuming the Django server runs on port 8000 and serves media
-const BASE_URL = "http://localhost:8000"; 
+const BASE_URL = "http://localhost:8000";
 
 // Helper function to render star rating based on score
 const StarRating = ({ score }: { score: number }) => {
@@ -26,11 +26,11 @@ const StarRating = ({ score }: { score: number }) => {
                     <svg className="w-6 h-6 inline-block fill-current" viewBox="0 0 24 24">
                         <defs>
                             <linearGradient id="half-gradient">
-                                <stop offset="50%" stopColor="#81E6D9"/>
-                                <stop offset="50%" stopColor="#4A5568"/>
+                                <stop offset="50%" stopColor="#81E6D9" />
+                                <stop offset="50%" stopColor="#4A5568" />
                             </linearGradient>
                         </defs>
-                        <path fill="url(#half-gradient)" d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.908-7.416 3.908 1.48-8.279-6.064-5.828 8.332-1.151z"/>
+                        <path fill="url(#half-gradient)" d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.908-7.416 3.908 1.48-8.279-6.064-5.828 8.332-1.151z" />
                     </svg>
                 </span>
             )}
@@ -44,7 +44,7 @@ const StarRating = ({ score }: { score: number }) => {
 
 const ReviewDetail = () => {
     // We assume the type 'Review' has fields: id, title, content, cover_image, score, reviewer, published_at
-    const { id } = useParams<{ id: string }>(); 
+    const { id } = useParams<{ id: string }>();
     const [review, setReview] = useState<Review | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -55,7 +55,7 @@ const ReviewDetail = () => {
         }
 
         setLoading(true);
-        axiosClient.get(`/reviews/${id}/`) 
+        axiosClient.get(`/reviews/${id}/`)
             .then(response => {
                 setReview(response.data);
             })
@@ -66,7 +66,7 @@ const ReviewDetail = () => {
     }, [id]);
 
     if (loading) return <Loader />;
-    
+
     if (!review) return (
         <div className="container mx-auto py-12 text-center">
             <h1 className="text-4xl text-text-main font-bold">Review Not Found</h1>
@@ -75,9 +75,9 @@ const ReviewDetail = () => {
     );
 
     // Construct the full image URL if the path is relative (Scenario A fix)
-    const imageUrl = review.image ? 
-                     (review.image.startsWith('http') ? review.image : `${BASE_URL}${review.image}`) :
-                     'https://placehold.co/1200x500/1F2937/FFFFFF?text=No+Cover+Image';
+    const imageUrl = review.image ?
+        (review.image.startsWith('http') ? review.image : `${BASE_URL}${review.image}`) :
+        'https://placehold.co/1200x500/1F2937/FFFFFF?text=No+Cover+Image';
 
     return (
         <div className="container mx-auto py-8">
@@ -91,7 +91,7 @@ const ReviewDetail = () => {
                             A deep dive analysis by <span className="text-secondary-light font-semibold">{review.reviewer.username}</span>
                         </p>
                     </div>
-                    
+
                     {/* Score Bubble */}
                     <div className="text-center p-3 rounded-full bg-secondary-dark border-4 border-secondary-light shadow-xl min-w-[120px]">
                         <p className="text-sm font-semibold text-secondary-light">SCORE</p>
@@ -107,13 +107,13 @@ const ReviewDetail = () => {
 
             {/* Featured Image */}
             <div className="w-full mb-8 rounded-xl overflow-hidden shadow-2xl">
-                <img 
-                    src={imageUrl} 
-                    alt={review.game_title} 
-                    className="w-full h-auto max-h-[500px] object-cover" 
+                <img
+                    src={imageUrl}
+                    alt={review.game_title}
+                    className="w-full h-auto max-h-[500px] object-cover"
                     onError={(e) => {
-                        (e.target as HTMLImageElement).onerror = null; 
-                        (e.target as HTMLImageElement).src="https://placehold.co/1200x500/1F2937/FFFFFF?text=Image+Load+Failed";
+                        (e.target as HTMLImageElement).onerror = null;
+                        (e.target as HTMLImageElement).src = "https://placehold.co/1200x500/1F2937/FFFFFF?text=Image+Load+Failed";
                     }}
                 />
             </div>
@@ -121,11 +121,11 @@ const ReviewDetail = () => {
             {/* Content Area - Distinction: Uses a darker background for the main content block */}
             <div className="bg-gray-800 p-8 rounded-xl shadow-lg">
                 <h2 className="text-3xl font-bold mb-4 text-primary border-b border-primary pb-2">Verdict & Analysis</h2>
-                
+
                 {/* Dangerously set HTML for rendering Django content */}
-                <div 
-                    className="text-text-main leading-relaxed space-y-4" 
-                    dangerouslySetInnerHTML={{ __html: review.content }} 
+                <div
+                    className="text-text-main leading-relaxed space-y-4"
+                    dangerouslySetInnerHTML={{ __html: review.content }}
                 />
 
                 {/* Optional: Add a conclusion summary block if your review model supports it */}
@@ -138,7 +138,20 @@ const ReviewDetail = () => {
                 */}
             </div>
 
-            {/* TODO: Add Comments Section below */}
+            {/* Comments Section */}
+            {/* <div className="mt-12"> */}
+                {/* <h2 className="text-3xl font-bold mb-6">Comments ({review.comments.length})</h2> */}
+                {/* TODO: Add comment form for authenticated users */}
+                {/* <div className="space-y-6"> */}
+                    {/* {review.comments.map(comment => ( */}
+                        {/* <div key={comment.id} className="bg-light-gray p-4 rounded-lg"> */}
+                            {/* <p className="font-semibold text-white">{comment.user.username}</p> */}
+                            {/* <p className="text-text-main">{comment.content}</p> */}
+                            {/* <p className="text-xs text-text-muted mt-2">{new Date(comment.created_at).toLocaleString()}</p> */}
+                        {/* </div> */}
+                    {/* ))} */}
+                {/* </div> */}
+            {/* </div> */}
         </div>
     );
 };
