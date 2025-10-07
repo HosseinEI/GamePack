@@ -8,6 +8,7 @@ import Reviews from './pages/Reviews';
 import About from './pages/About';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
+import ReviewDetail from './pages/ReviewDetail';
 import { useAuthStore } from './store/authStore';
 
 // Simple component for protected routes (can be expanded)
@@ -33,7 +34,7 @@ const App = () => {
         <Route path="articles" element={<Articles />} />
         <Route path="articles/:slug" element={<ArticleDetail />} />
         <Route path="reviews" element={<Reviews />} />
-        {/* <Route path="reviews/:id" element={<ReviewDetail />} /> // Placeholder for future detail view */}
+        <Route path="reviews/:id" element={<ReviewDetail />} /> 
         <Route path="about" element={<About />} />
         <Route path="login" element={<Login />} />
 
