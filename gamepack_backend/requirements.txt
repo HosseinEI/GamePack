@@ -1,0 +1,9 @@
+# requirements.txt
+Django>=5.0
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+python-dotenv
+dj-database-url
+Pillow
+gunicorn
