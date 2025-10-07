@@ -12,7 +12,7 @@ const Articles = () => {
     const fetchArticles = async () => {
       try {
         const response = await axiosClient.get('/articles/');
-        setArticles(response.data.results);
+        setArticles(response.data.results || []);
       } catch (error) {
         console.error("Failed to fetch articles", error);
       } finally {

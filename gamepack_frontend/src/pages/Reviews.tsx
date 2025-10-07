@@ -12,7 +12,7 @@ const Reviews = () => {
 
   useEffect(() => {
     axiosClient.get('/reviews/')
-      .then(res => setReviews(res.data.results))
+      .then(res => setReviews(res.data.results || []))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, []);

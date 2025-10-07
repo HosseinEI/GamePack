@@ -21,9 +21,9 @@ const Home = () => {
           axiosClient.get('/reviews/?limit=4'),
           axiosClient.get('/ads/'),
         ]);
-        setArticles(articlesRes.data.results);
-        setReviews(reviewsRes.data.results);
-        setAds(adsRes.data);
+        setArticles(articlesRes.data.results || []);
+        setReviews(reviewsRes.data.results || []);
+        setAds(adsRes.data.results || adsRes.data);
       } catch (error) {
         console.error("Failed to fetch home page data", error);
       } finally {
@@ -45,7 +45,7 @@ const Home = () => {
           <p className="text-xl text-text-main">Your ultimate source for news, reviews, and insights.</p>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content: Articles */}
         <div className="lg:col-span-2">
