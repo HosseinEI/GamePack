@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (token) {
       try {
         // The profile endpoint should fetch the user details
-        const response = await axiosClient.get('/auth/profile/');
+        const response = await axiosClient.get('profile/');
         set({ user: response.data });
       } catch (error) {
         console.error("Failed to fetch user profile", error);

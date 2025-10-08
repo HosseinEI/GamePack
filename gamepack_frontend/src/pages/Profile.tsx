@@ -30,7 +30,7 @@ const Profile = () => {
     e.preventDefault();
     setMessage('');
     try {
-      const response = await axiosClient.patch('/auth/profile/', profileData);
+      const response = await axiosClient.patch('profile/', profileData);
       useAuthStore.setState({ user: response.data });
       setMessage('Profile updated successfully!');
       setIsEditing(false);
