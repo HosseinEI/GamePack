@@ -14,27 +14,31 @@ const StarRating = ({ score }: { score: number }) => {
     const hasHalfStar = roundedScore % 1 !== 0;
     const emptyStars = 10 - Math.ceil(roundedScore);
 
+    const activeStarColor = "text-white"; 
+    const emptyStarColor = "text-gray-600";
+
     return (
         <div className="flex items-center space-x-0.5 text-2xl">
             {[...Array(fullStars)].map((_, i) => (
-                <span key={`full-${i}`} className="text-secondary-light">★</span> // Full star
+                <span key={`full-${i}`} className={activeStarColor}>★</span> // Full star
             ))}
+            {/* 2. Half Star (The Fix) */}
             {hasHalfStar && (
-                <span className="text-secondary-light">
-                    {/* Inline SVG for half star */}
-                    <svg className="w-6 h-6 inline-block fill-current" viewBox="0 0 24 24">
-                        <defs>
-                            <linearGradient id="half-gradient">
-                                <stop offset="50%" stopColor="#81E6D9" />
-                                <stop offset="50%" stopColor="#4A5568" />
-                            </linearGradient>
-                        </defs>
-                        <path fill="url(#half-gradient)" d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.908-7.416 3.908 1.48-8.279-6.064-5.828 8.332-1.151z" />
-                    </svg>
+                <span className="relative">
+                    {/* Background Empty Star (Right Half) */}
+                    <span className={emptyStarColor}>★</span> 
+                    
+                    {/* Foreground Half-Star (Left Half) - Uses white color with a clip-path */}
+                    <span 
+                        className={`absolute top-0 left-0 overflow-hidden ${activeStarColor}`} 
+                        style={{ clipPath: 'inset(0 50% 0 0)' }} // Clips to the left 50%
+                    >
+                        ★
+                    </span>
                 </span>
             )}
             {[...Array(emptyStars)].map((_, i) => (
-                <span key={`empty-${i}`} className="text-gray-600">★</span> // Empty star
+                <span key={`empty-${i}`} className={emptyStarColor}>★</span> // Empty star
             ))}
         </div>
     );
@@ -137,7 +141,7 @@ const ReviewDetail = () => {
                     </div>
 
                     {/* Score Bubble */}
-                    <div className="text-center p-3 rounded-full bg-secondary-dark border-4 border-secondary-light shadow-xl min-w-[120px]">
+                    <div className="text-center p-5 rounded-full bg-secondary-dark border-4 border-secondary-light shadow-xl min-w-[150px]">
                         <p className="text-sm font-semibold text-secondary-light">SCORE</p>
                         <p className="text-5xl font-black text-white">{displayScore.toFixed(1)}</p>
                         <StarRating score={displayScore} />
