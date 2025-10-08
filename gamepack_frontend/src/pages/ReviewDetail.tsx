@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
-import { Review } from '../types';
+import { Review, Comment } from '../types';
 import Loader from '../components/Loader';
+import { useAuthStore } from '../store/authStore';
 
-// Assuming the Django server runs on port 8000 and serves media
 const BASE_URL = "http://localhost:8000";
 
-// Helper function to render star rating based on score
 const StarRating = ({ score }: { score: number }) => {
     // Round score to nearest 0.5 for visual representation
     const roundedScore = Math.round(score * 2) / 2;
@@ -43,10 +42,15 @@ const StarRating = ({ score }: { score: number }) => {
 
 
 const ReviewDetail = () => {
-    // We assume the type 'Review' has fields: id, title, content, cover_image, score, reviewer, published_at
     const { id } = useParams<{ id: string }>();
     const [review, setReview] = useState<Review | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const [newCommentContent, setNewCommentContent] = useState('');
+    const [commentError, setCommentError] = useState('');
+    const [commentSubmitting, setCommentSubmitting] = useState(false);
+
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
     useEffect(() => {
         if (!id) {
@@ -65,6 +69,44 @@ const ReviewDetail = () => {
             .finally(() => setLoading(false));
     }, [id]);
 
+    const handleCommentSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setCommentError('');
+        setCommentSubmitting(true);
+
+        if (!newCommentContent.trim() || !review) {
+            setCommentError('Comment cannot be empty.');
+            setCommentSubmitting(false);
+            return;
+        }
+
+        try {
+            const response = await axiosClient.post<Comment>(`/reviews/${review.id}/comments/`, {
+                content: newCommentContent,
+            });
+
+            const submittedComment: Comment = response.data;
+
+            setReview(prevReview => {
+                if (!prevReview) return null;
+                const currentComments = prevReview.comments || []; 
+            
+            return {
+                ...prevReview,
+                comments: [submittedComment, ...currentComments] 
+            };
+            });
+
+            setNewCommentContent(''); 
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.detail || 'Failed to post comment. Are you logged in?';
+            setCommentError(errorMsg);
+            console.error("Comment submission failed:", error);
+        } finally {
+            setCommentSubmitting(false);
+        }
+    };
+
     if (loading) return <Loader />;
 
     if (!review) return (
@@ -74,7 +116,9 @@ const ReviewDetail = () => {
         </div>
     );
 
-    // Construct the full image URL if the path is relative (Scenario A fix)
+    const score = parseFloat(review.rating as unknown as string);
+    const displayScore = isNaN(score) ? 0 : score;
+
     const imageUrl = review.image ?
         (review.image.startsWith('http') ? review.image : `${BASE_URL}${review.image}`) :
         'https://placehold.co/1200x500/1F2937/FFFFFF?text=No+Cover+Image';
@@ -95,8 +139,8 @@ const ReviewDetail = () => {
                     {/* Score Bubble */}
                     <div className="text-center p-3 rounded-full bg-secondary-dark border-4 border-secondary-light shadow-xl min-w-[120px]">
                         <p className="text-sm font-semibold text-secondary-light">SCORE</p>
-                        <p className="text-5xl font-black text-white">{review.rating.toFixed(1)}</p>
-                        <StarRating score={review.rating} />
+                        <p className="text-5xl font-black text-white">{displayScore.toFixed(1)}</p>
+                        <StarRating score={displayScore} />
                     </div>
                 </div>
 
@@ -122,36 +166,60 @@ const ReviewDetail = () => {
             <div className="bg-gray-800 p-8 rounded-xl shadow-lg">
                 <h2 className="text-3xl font-bold mb-4 text-primary border-b border-primary pb-2">Verdict & Analysis</h2>
 
+                {review.summary && (
+                    <div className="mt-4 mb-8 p-4 border-l-4 border-secondary bg-gray-700/50 rounded-lg shadow-inner">
+                        <h3 className="text-xl font-bold text-secondary-light mb-2">Summary Verdict</h3>
+                        <p className="italic text-lg text-text-main">{review.summary}</p>
+                    </div>
+                )}
+                {/* End Summary Section */}
                 {/* Dangerously set HTML for rendering Django content */}
                 <div
                     className="text-text-main leading-relaxed space-y-4"
                     dangerouslySetInnerHTML={{ __html: review.content }}
                 />
 
-                {/* Optional: Add a conclusion summary block if your review model supports it */}
-                {/* Example: 
-                <div className="mt-8 p-4 border-l-4 border-secondary bg-gray-700/50 rounded">
-                    <p className="italic text-lg text-secondary-light font-medium">
-                        "The combination of stunning visuals and groundbreaking mechanics makes this a must-play title of the year."
-                    </p>
-                </div>
-                */}
-            </div>
+                <div className="mt-12">
+                    <h2 className="text-3xl font-bold mb-6">Comments ({review.comments ? review.comments.length : 0})</h2>
 
-            {/* Comments Section */}
-            {/* <div className="mt-12"> */}
-                {/* <h2 className="text-3xl font-bold mb-6">Comments ({review.comments.length})</h2> */}
-                {/* TODO: Add comment form for authenticated users */}
-                {/* <div className="space-y-6"> */}
-                    {/* {review.comments.map(comment => ( */}
-                        {/* <div key={comment.id} className="bg-light-gray p-4 rounded-lg"> */}
-                            {/* <p className="font-semibold text-white">{comment.user.username}</p> */}
-                            {/* <p className="text-text-main">{comment.content}</p> */}
-                            {/* <p className="text-xs text-text-muted mt-2">{new Date(comment.created_at).toLocaleString()}</p> */}
-                        {/* </div> */}
-                    {/* ))} */}
-                {/* </div> */}
-            {/* </div> */}
+                    {/* Comment Submission Form */}
+                    {isAuthenticated ? (
+                        <form onSubmit={handleCommentSubmit} className="mb-8 p-6 bg-dark rounded-lg border border-gray-700">
+                            <h3 className="text-xl font-semibold mb-3">Post a Comment</h3>
+                            {commentError && <p className="bg-red-500/20 text-red-400 p-3 rounded mb-4">{commentError}</p>}
+                            <textarea
+                                value={newCommentContent}
+                                onChange={(e) => setNewCommentContent(e.target.value)}
+                                className="w-full bg-dark p-3 rounded border border-gray-600 focus:outline-none focus:border-primary min-h-[100px]"
+                                placeholder="Write your comment here..."
+                                disabled={commentSubmitting}
+                            />
+                            <button
+                                type="submit"
+                                className="mt-3 bg-primary text-white py-2 px-6 rounded font-bold hover:bg-purple-700 transition-colors disabled:bg-primary/50"
+                                disabled={commentSubmitting || !newCommentContent.trim()}
+                            >
+                                {commentSubmitting ? 'Posting...' : 'Submit Comment'}
+                            </button>
+                        </form>
+                    ) : (
+                        <p className="text-center text-text-muted mb-8 p-4 bg-dark rounded-lg">
+                            Please <a href="/login" className="text-primary hover:underline">log in</a> to post a comment.
+                        </p>
+                    )}
+
+                    {/* Display Existing Comments */}
+                    <div className="space-y-6">
+                        {review.comments && review.comments.map((comment: Comment) => (
+                            <div key={comment.id} className="bg-light-gray p-4 rounded-lg">
+                                <p className="font-semibold text-white">{comment.user.username}</p>
+                                <p className="text-text-main">{comment.content}</p>
+                                <p className="text-xs text-text-muted mt-2">{new Date(comment.created_at).toLocaleString()}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

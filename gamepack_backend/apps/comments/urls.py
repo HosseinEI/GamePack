@@ -4,4 +4,5 @@ from .views import CommentCreateView, CommentDestroyView
 urlpatterns = [
     path('articles/<slug:slug>/comments/', CommentCreateView.as_view(), name='comment-create'),
     path('comments/<int:pk>/', CommentDestroyView.as_view(), name='comment-delete'),
+    path('reviews/<int:review_id>/comments/', CommentCreateView.as_view(), name='review-comment-create'),
 ]
