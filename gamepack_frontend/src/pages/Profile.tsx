@@ -7,9 +7,11 @@ import { User } from '../types';
 const Profile = () => {
   const { user } = useAuthStore();
   const [profileData, setProfileData] = useState<Partial<User>>({});
+  const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState('');
+
 
   useEffect(() => {
     if (user) {
@@ -26,14 +28,33 @@ const Profile = () => {
     });
   };
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedAvatar(e.target.files[0]);
+    }
+  };
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
+    const formData = new FormData();
+
+    if (profileData.email) formData.append('email', profileData.email);
+    if (profileData.bio) formData.append('bio', profileData.bio);
+    if (selectedAvatar) {
+      formData.append('avatar', selectedAvatar);
+    }
+
     try {
-      const response = await axiosClient.patch('profile/', profileData);
+      const response = await axiosClient.patch('/profile/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       useAuthStore.setState({ user: response.data });
       setMessage('Profile updated successfully!');
       setIsEditing(false);
+      setSelectedAvatar(null);
     } catch (error) {
       setMessage('Failed to update profile.');
       console.error(error);
@@ -62,6 +83,14 @@ const Profile = () => {
 
       {isEditing ? (
         <form onSubmit={handleUpdate} className="space-y-4">
+          <div>
+            <label className="block text-text-muted mb-1">New Avatar</label>
+            <input type="file" name="avatar" accept="image/*" onChange={handleAvatarChange} className="w-full bg-dark p-2 rounded border border-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30"
+            />
+            {selectedAvatar && (
+              <p className="text-sm text-primary mt-2">Selected: {selectedAvatar.name}</p>
+            )}
+          </div>
           <div>
             <label className="block text-text-muted mb-1">Email</label>
             <input type="email" name="email" value={profileData.email || ''} onChange={handleChange} className="w-full bg-dark p-2 rounded border border-gray-700" />
