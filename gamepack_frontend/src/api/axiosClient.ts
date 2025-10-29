@@ -19,12 +19,11 @@ axiosClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Optional: Add response interceptor for handling token refresh or global errors
 axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // Handle unauthorized access, e.g., logout user
+      // Handle unauthorized access
       useAuthStore.getState().logout();
       window.location.href = '/login';
     }

@@ -8,7 +8,6 @@ import { useAuthStore } from '../store/authStore';
 const BASE_URL = "http://localhost:8000";
 
 const StarRating = ({ score }: { score: number }) => {
-    // Round score to nearest 0.5 for visual representation
     const roundedScore = Math.round(score * 2) / 2;
     const fullStars = Math.floor(roundedScore);
     const hasHalfStar = roundedScore % 1 !== 0;
@@ -20,25 +19,21 @@ const StarRating = ({ score }: { score: number }) => {
     return (
         <div className="flex items-center space-x-0.5 text-2xl">
             {[...Array(fullStars)].map((_, i) => (
-                <span key={`full-${i}`} className={activeStarColor}>★</span> // Full star
+                <span key={`full-${i}`} className={activeStarColor}>★</span> 
             ))}
-            {/* 2. Half Star (The Fix) */}
             {hasHalfStar && (
                 <span className="relative">
-                    {/* Background Empty Star (Right Half) */}
                     <span className={emptyStarColor}>★</span> 
-                    
-                    {/* Foreground Half-Star (Left Half) - Uses white color with a clip-path */}
                     <span 
                         className={`absolute top-0 left-0 overflow-hidden ${activeStarColor}`} 
-                        style={{ clipPath: 'inset(0 50% 0 0)' }} // Clips to the left 50%
+                        style={{ clipPath: 'inset(0 50% 0 0)' }} 
                     >
                         ★
                     </span>
                 </span>
             )}
             {[...Array(emptyStars)].map((_, i) => (
-                <span key={`empty-${i}`} className={emptyStarColor}>★</span> // Empty star
+                <span key={`empty-${i}`} className={emptyStarColor}>★</span> 
             ))}
         </div>
     );
@@ -131,7 +126,6 @@ const ReviewDetail = () => {
         <div className="container mx-auto py-8">
             {/* Header Area */}
             <div className="mb-8">
-                {/* 🎯 Distinction: Prominent Review Score Section */}
                 <div className="flex justify-between items-start mb-4 border-b pb-4 border-gray-700">
                     <div>
                         <h1 className="text-5xl font-extrabold text-text-main leading-tight">{review.game_title}</h1>
@@ -140,7 +134,6 @@ const ReviewDetail = () => {
                         </p>
                     </div>
 
-                    {/* Score Bubble */}
                     <div className="text-center p-5 rounded-full bg-secondary-dark border-4 border-secondary-light shadow-xl min-w-[150px]">
                         <p className="text-sm font-semibold text-secondary-light">SCORE</p>
                         <p className="text-5xl font-black text-white">{displayScore.toFixed(1)}</p>
@@ -166,7 +159,7 @@ const ReviewDetail = () => {
                 />
             </div>
 
-            {/* Content Area - Distinction: Uses a darker background for the main content block */}
+            {/* Content Area */}
             <div className="bg-gray-800 p-8 rounded-xl shadow-lg">
                 <h2 className="text-3xl font-bold mb-4 text-primary border-b border-primary pb-2">Verdict & Analysis</h2>
 
@@ -177,7 +170,6 @@ const ReviewDetail = () => {
                     </div>
                 )}
                 {/* End Summary Section */}
-                {/* Dangerously set HTML for rendering Django content */}
                 <div
                     className="text-text-main leading-relaxed space-y-4"
                     dangerouslySetInnerHTML={{ __html: review.content }}

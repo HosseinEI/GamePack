@@ -1,5 +1,4 @@
 // src/pages/Reviews.tsx
-// ... (similar to Articles.tsx but fetches /reviews/ and uses ReviewCard)
 import { useState, useEffect } from 'react';
 import axiosClient from '../api/axiosClient';
 import { Review } from '../types';

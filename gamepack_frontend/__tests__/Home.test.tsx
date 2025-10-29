@@ -29,11 +29,9 @@ test('Home page fetches and displays data correctly', async () => {
     </BrowserRouter>
   );
 
-  // Wait for the data to be loaded and displayed
   await waitFor(() => {
     expect(screen.getByText('First Article')).toBeInTheDocument();
     expect(screen.getByText('Cool Game Review')).toBeInTheDocument();
-    // Check for a heading related to ads/sponsored content
     expect(screen.getByText('Sponsored')).toBeInTheDocument();
   });
 });

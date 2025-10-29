@@ -2,7 +2,7 @@
 from django.contrib import admin
 from .models import Article, Category, Tag
 
-# Inline for Articles (Optional, for better admin view)
+# Inline for Articles
 class TagInline(admin.TabularInline):
     model = Article.tags.through
     extra = 1
@@ -24,4 +24,3 @@ class ArticleAdmin(admin.ModelAdmin):
     list_filter = ('category', 'tags', 'published_at')
     search_fields = ('title', 'content')
     raw_id_fields = ('author',)
-    # inlines = [TagInline] # Uncomment if you prefer M2M management this way

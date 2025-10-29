@@ -25,10 +25,10 @@ class Comment(models.Model):
         
         if self.article:
             parent_type = "Article"
-            parent_title = getattr(self.article, 'title', 'Unknown Article') # Use getattr for safety
+            parent_title = getattr(self.article, 'title', 'Unknown Article')
         elif self.review:
             parent_type = "Review"
-            parent_title = getattr(self.review, 'game_title', 'Unknown Review') # Assuming Review uses game_title
+            parent_title = getattr(self.review, 'game_title', 'Unknown Review')
         else:
             parent_type = "ORPHANED ITEM"
             parent_title = "ERROR"

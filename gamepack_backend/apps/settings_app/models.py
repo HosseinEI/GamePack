@@ -9,7 +9,6 @@ class SiteSettings(models.Model):
     def __str__(self):
         return self.site_name
         
-    # Ensure only one instance of settings can be created
     def save(self, *args, **kwargs):
         self.pk = 1
         super(SiteSettings, self).save(*args, **kwargs)

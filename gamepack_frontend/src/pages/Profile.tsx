@@ -15,7 +15,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      // Use the profile data from Zustand store initially
       setProfileData(user);
       setLoading(false);
     }

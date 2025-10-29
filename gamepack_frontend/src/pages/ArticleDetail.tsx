@@ -57,14 +57,12 @@ const ArticleDetail = () => {
             if (!prevArticle) return null;
             return {
                 ...prevArticle,
-                // Add the new comment to the list
                 comments: [submittedComment, ...prevArticle.comments] 
             };
       });
 
       setNewCommentContent(''); // Clear the input field
     } catch (error: any) {
-      // Display a more specific error if available
       const errorMsg = error.response?.data?.detail || 'Failed to post comment. Are you logged in?';
       setCommentError(errorMsg);
       console.error("Comment submission failed:", error);
@@ -88,7 +86,6 @@ const ArticleDetail = () => {
       {/* Comments Section */}
       <div className="mt-12">
         <h2 className="text-3xl font-bold mb-6">Comments ({article.comments.length})</h2>
-        {/* The Comment Submission Form (NEW CODE) */}
         {isAuthenticated ? (
           <form onSubmit={handleCommentSubmit} className="mb-8 p-6 bg-dark rounded-lg border border-gray-700">
             <h3 className="text-xl font-semibold mb-3">Post a Comment</h3>

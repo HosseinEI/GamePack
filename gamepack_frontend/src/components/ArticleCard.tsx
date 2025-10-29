@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Article } from '../types';
 
 interface ArticleCardProps {
-  article: Partial<Article>; // Use partial for list view
+  article: Partial<Article>; 
 }
 
 const ArticleCard = ({ article }: ArticleCardProps) => (

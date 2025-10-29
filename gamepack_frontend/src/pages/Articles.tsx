@@ -32,7 +32,6 @@ const Articles = () => {
           <ArticleCard key={article.slug} article={article} />
         ))}
       </div>
-      {/* TODO: Add Pagination Controls */}
     </div>
   );
 };

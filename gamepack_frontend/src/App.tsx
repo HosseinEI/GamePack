@@ -11,7 +11,6 @@ import Login from './pages/Login';
 import ReviewDetail from './pages/ReviewDetail';
 import { useAuthStore } from './store/authStore';
 
-// Simple component for protected routes (can be expanded)
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   if (!isAuthenticated) return <Login />; // Redirect to login page
@@ -22,7 +21,6 @@ const App = () => {
   const loadUser = useAuthStore((state) => state.loadUserFromToken);
 
   useEffect(() => {
-    // Attempt to load user profile on initial app load if tokens exist
     loadUser();
   }, [loadUser]);
 
